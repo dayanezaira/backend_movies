@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const routes = Router();
+const routes = Router()
 
 // Route files imports
 const usersRouters = require('./users.routes')
