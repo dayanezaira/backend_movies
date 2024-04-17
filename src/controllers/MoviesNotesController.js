@@ -1,7 +1,9 @@
 const knex = require('../database/knex')
 class MoviesNotesController {
     async index(request, response){
-        const { user_id, title, tags} = request.query
+        const { title, tags} = request.query
+
+        const user_id = request.user.id
 
         let movie_notes
 
@@ -55,7 +57,7 @@ class MoviesNotesController {
             .orderBy('movie_notes.title')
         }
 
-        response.json(movie_notes)
+        return response.json(movie_notes)
     }
 
     async show(request, response){
@@ -67,12 +69,14 @@ class MoviesNotesController {
           return response.json({...movie_note, tags})
         }
         
-        response.status(404).json({status: 'error', message: 'Nota não encontrada!'})
+        return response.status(404).json({status: 'error', message: 'Nota não encontrada!'})
     }
 
     async create(request, response){
+      
         const { title, description, rating, tags } = request.body
-        const { user_id } = request.params
+        const user_id = request.user.id
+
         const [note_id] = await knex('movie_notes').insert({title, description, rating, user_id})
 
         const tagsInsert = tags.map(name => {
@@ -85,7 +89,7 @@ class MoviesNotesController {
 
         await knex('movie_tags').insert(tagsInsert)
 
-        response.json({status: 'success', message: 'Nota cadastrada com sucesso!'})
+        return response.json({status: 'success', message: 'Nota cadastrada com sucesso!'})
     }
 
     async delete(request, response){
@@ -98,8 +102,14 @@ class MoviesNotesController {
 
         await knex('movie_notes').where('id', id).delete()
 
-        response.status(200).json({status: 'success', message: 'Nota deletada com sucesso!'})
+        return response.status(200).json({status: 'success', message: 'Nota deletada com sucesso!'})
 
+    }
+
+    async update(request, response){
+
+        return response.status(200).json({status: 'success', message: 'Nota deletada com sucesso!'})
+        
     }
 }
 

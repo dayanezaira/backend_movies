@@ -1,29 +1,19 @@
-const { Router } = require('express')
+const { Router } = require("express")
+const multer = require("multer")
+const uploadConfig = require("../configs/upload")
 
-const usersRouters = Router();
-const UsersController = require('../controllers/UsersController');
-const usersController = new UsersController();
+const UsersController = require('../controllers/UsersController')
+const UserControllerAvatar = require('../controllers/UserControllerAvatar')
+const ensureAuthenticated = require("../middlewares/ensureAuthenticated")
 
-const MoviesNotesController = require('../controllers/MoviesNotesController');
-const moviesNotesController = new MoviesNotesController();
+const usersRouters = Router()
+const upload = multer(uploadConfig.MULTER)
 
+const usersController = new UsersController()
+const userControllerAvatar = new UserControllerAvatar()
 
+usersRouters.post('/', usersController.create)
+usersRouters.put('/', ensureAuthenticated, usersController.update)
+usersRouters.patch("/avatar", ensureAuthenticated, upload.single("avatar"), userControllerAvatar.update)
 
-// Show info aboult an user
-usersRouters.get('/:id', usersController.show);
-
-// Create a new user
-usersRouters.post('/', usersController.create);
-
-// Update an user
-usersRouters.patch('/:id', usersController.update);
-
-// Delete an user
-usersRouters.delete('/:id', usersController.delete);
-
-// usersRouters.get('/:user_id/movies_notes', moviesNotesController.index);
-
-// Create a new movie note
-// usersRouters.post('/:user_id/movies_notes', moviesNotesController.create);
-
-module.exports = usersRouters;
+module.exports = usersRouters
